@@ -8,7 +8,7 @@ import (
 )
 
 func TestArticleRepository(t *testing.T) {
-	articlerepo := NewArticleInmemory()
+	articlerepo := NewArticleInmemoryRepo()
 	Convey("Creating a article", t, func() {
 		Convey("When you create a new article", func() {
 			article := model.Article{
@@ -29,7 +29,8 @@ func TestArticleRepository(t *testing.T) {
 
 				Convey("Then it can be deleted", func() {
 					articlerepo.Delete([]int{created.ID})
-					found, _ := articlerepo.GetByIds([]int{created.ID})
+					found, err := articlerepo.GetByIds([]int{created.ID})
+					So(err, ShouldBeEmpty)
 					So(found, ShouldBeEmpty)
 
 				})
@@ -44,11 +45,11 @@ func TestArticleRepository(t *testing.T) {
 	Convey("Creating multiple  articles", t, func() {
 		Convey("When you create new articles", func() {
 			articles := []model.Article{
-				model.Article{
+				{
 					Name:   "EFT from A to Z",
 					Author: nil,
 				},
-				model.Article{
+				{
 					Name:   "Spanish with Lena",
 					Author: nil,
 				},
@@ -63,7 +64,8 @@ func TestArticleRepository(t *testing.T) {
 				}
 
 				Convey("Then it can get by id", func() {
-					found, _ := articlerepo.GetByIds(ids)
+					found, err := articlerepo.GetByIds(ids)
+					So(err, ShouldBeNil)
 					for i, _ := range found {
 						So(found[i].ID, ShouldEqual, created[i].ID)
 					}

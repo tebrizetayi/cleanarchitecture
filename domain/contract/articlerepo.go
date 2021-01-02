@@ -8,6 +8,6 @@ type ArticleRepository interface {
 	GetAll() ([]model.Article, error)
 	Delete(articleId []int) error
 	Reset()
-	GetById(ids []int) ([]model.Article, error)
+	GetByIds(ids []int) ([]model.Article, error)
 	Create(articles []model.Article) ([]model.Article, error)
 }
