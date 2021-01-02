@@ -9,11 +9,19 @@ import (
 
 func TestArticleRepository(t *testing.T) {
 	articlerepo := NewArticleInmemoryRepo()
+	authorrepo := NewAuthorInmemoryRepo()
+
+	author := model.Author{
+		Name: "Jack London",
+	}
+	createdAuthor, _ := authorrepo.Create([]model.Author{author})
+
 	Convey("Creating a article", t, func() {
 		Convey("When you create a new article", func() {
+
 			article := model.Article{
 				Name:   "EFT from A to Z",
-				Author: nil,
+				Author: createdAuthor,
 			}
 			createdArticles, _ := articlerepo.Create([]model.Article{article})
 			Convey("Then ID should be bigger than zero", func() {
@@ -47,11 +55,11 @@ func TestArticleRepository(t *testing.T) {
 			articles := []model.Article{
 				{
 					Name:   "EFT from A to Z",
-					Author: nil,
+					Author: createdAuthor,
 				},
 				{
 					Name:   "Spanish with Lena",
-					Author: nil,
+					Author: createdAuthor,
 				},
 			}
 			created, _ := articlerepo.Create(articles)
