@@ -13,7 +13,7 @@ var (
 	articleBS   = NewArticleBS(&articleRepo)
 )
 
-func TestArticles(t *testing.T) {
+func TestArticle(t *testing.T) {
 	Convey("Testing getting article", t, func() {
 		Convey("WHEN an article is created in the system", func() {
 			articles := []model.Article{

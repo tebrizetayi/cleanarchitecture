@@ -5,6 +5,9 @@ import (
 )
 
 type AuthorRepository interface {
-	GetAll(skip int, limit int) ([]model.Author, error)
-	Delete(authorId []int) error
+	GetAll() ([]model.Author, error)
+	Delete(ids []int) error
+	Reset()
+	GetByIds(ids []int) ([]model.Author, error)
+	Create(authors []model.Author) ([]model.Author, error)
 }

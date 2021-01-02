@@ -6,7 +6,7 @@ import (
 
 type ArticleRepository interface {
 	GetAll() ([]model.Article, error)
-	Delete(articleId []int) error
+	Delete(ids []int) error
 	Reset()
 	GetByIds(ids []int) ([]model.Article, error)
 	Create(articles []model.Article) ([]model.Article, error)

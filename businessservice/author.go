@@ -10,17 +10,36 @@ type AuthorBS struct {
 }
 
 func NewAuthorBS(AuthorRepo contract.AuthorRepository) AuthorBS {
-	return AuthorBS{AuthorRepo: AuthorRepo}
+	return AuthorBS{
+		AuthorRepo: AuthorRepo,
+	}
 }
 
-func (a *AuthorBS) GetAll() (model.Author, error) {
-	//Some Code
-	a.AuthorRepo.GetAll(0, -1)
-	return model.Author{}, nil
+func (a *AuthorBS) GetAll() ([]model.Author, error) {
+	authors, err := a.AuthorRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return authors, nil
 }
 
-func (a *AuthorBS) Delete(AuthorIds []int) error {
-	//Some Code
-	a.AuthorRepo.Delete(AuthorIds)
-	return nil
+func (a *AuthorBS) Delete(ids []int) error {
+	err := a.AuthorRepo.Delete(ids)
+	return err
+}
+
+func (a *AuthorBS) Create(authors []model.Author) ([]model.Author, error) {
+	authors, err := a.AuthorRepo.Create(authors)
+	if err != nil {
+		return nil, err
+	}
+	return authors, nil
+}
+
+func (a *AuthorBS) GetByIds(ids []int) ([]model.Author, error) {
+	authors, err := a.AuthorRepo.GetByIds(ids)
+	if err != nil {
+		return nil, err
+	}
+	return authors, nil
 }
