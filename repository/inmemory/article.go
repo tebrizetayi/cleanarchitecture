@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"errors"
+	"sync/atomic"
 
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
 )
@@ -22,7 +23,7 @@ func (a *ArticleInmemoryRepo) Create(articles []model.Article) ([]model.Article,
 
 	result := []model.Article{}
 	for _, v := range articles {
-		a.sequence++
+		atomic.AddInt32(a.sequence, 1)
 		v.ID = a.sequence
 		a.Articles[v.ID] = v
 		result = append(result, v)
