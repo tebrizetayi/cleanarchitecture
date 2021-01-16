@@ -1,13 +1,16 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
-func InitRoute(authorHandler AuthorHandler) *mux.Router {
+func InitRoutes(ah *AuthorHandler) *mux.Router {
 
 	r := mux.NewRouter()
-	r.HandleFunc("/author", authorHandler.Get)
-
+	r.HandleFunc("/author", ah.Get).Methods(http.MethodGet)
+	r.HandleFunc("/author", ah.Create).Methods(http.MethodPost)
+	r.HandleFunc("/author/{id}", ah.Delete).Methods(http.MethodDelete)
 	return r
 }

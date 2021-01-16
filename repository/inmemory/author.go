@@ -2,42 +2,57 @@ package inmemory
 
 import (
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
-	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory/db"
 )
 
 type AuthorInmemoryRepo struct {
-	*db.Inmemorydb
+	Authors  map[int]model.Author
+	sequence int
 }
 
 func NewAuthorInmemoryRepo() AuthorInmemoryRepo {
-	return AuthorInmemoryRepo{
-		Inmemorydb: db.GetInmemorydb(),
-	}
+	return AuthorInmemoryRepo{sequence: 0, Authors: make(map[int]model.Author)}
 }
 
 func (a *AuthorInmemoryRepo) Create(Authors []model.Author) ([]model.Author, error) {
+
 	result := []model.Author{}
 	for _, v := range Authors {
-		a.Inmemorydb.Authors.sequence++
-		v.ID = a.Inmemorydb.Authors.sequence
-		a.Inmemorydb.Authors[v.ID] = v
+		a.sequence++
+		v.ID = a.sequence
+		a.Authors[v.ID] = v
 		result = append(result, v)
 	}
 	return result, nil
 }
 
-func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
+func (a *AuthorInmemoryRepo) Update(authors []model.Author) ([]model.Author, error) {
+
 	result := []model.Author{}
-	for _, v := range a.Inmemorydb.Authors {
+	for _, v := range authors {
+		if _, ok := a.Authors[v.ID]; ok {
+			a.Authors[v.ID] = v
+			result = append(result, v)
+		} else {
+			result = append(result, model.Author{})
+		}
+	}
+	return result, nil
+}
+
+func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
+
+	result := []model.Author{}
+	for _, v := range a.Authors {
 		result = append(result, v)
 	}
 	return result, nil
 }
 
 func (a *AuthorInmemoryRepo) Delete(ids []int) error {
+
 	for _, v := range ids {
-		if _, ok := a.Inmemorydb.Authors[v]; ok {
-			delete(a.Inmemorydb.Authors, v)
+		if _, ok := a.Authors[v]; ok {
+			delete(a.Authors, v)
 		}
 	}
 
@@ -48,7 +63,7 @@ func (a *AuthorInmemoryRepo) GetByIds(ids []int) ([]model.Author, error) {
 
 	result := []model.Author{}
 	for _, v := range ids {
-		if v, ok := a.Inmemorydb.Authors[v]; ok {
+		if v, ok := a.Authors[v]; ok {
 			result = append(result, v)
 		}
 	}
@@ -57,6 +72,6 @@ func (a *AuthorInmemoryRepo) GetByIds(ids []int) ([]model.Author, error) {
 }
 
 func (a *AuthorInmemoryRepo) Reset() {
-	a.Inmemorydb.Authors = make(map[int]model.Author)
-	a.Inmemorydb.sequence = 0
+	a.Authors = make(map[int]model.Author)
+	a.sequence = 0
 }
