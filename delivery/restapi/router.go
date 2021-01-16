@@ -12,5 +12,6 @@ func InitRoutes(ah *AuthorHandler) *mux.Router {
 	r.HandleFunc("/author", ah.Get).Methods(http.MethodGet)
 	r.HandleFunc("/author", ah.Create).Methods(http.MethodPost)
 	r.HandleFunc("/author/{id}", ah.Delete).Methods(http.MethodDelete)
+	r.HandleFunc("/author/{id}", ah.Update).Methods(http.MethodPut)
 	return r
 }

@@ -43,3 +43,12 @@ func (a *AuthorBS) GetByIds(ids []int) ([]model.Author, error) {
 	}
 	return authors, nil
 }
+
+func (a *AuthorBS) Update(authors []model.Author) ([]model.Author, error) {
+	if authors == nil || len(authors) == 0 {
+		return []model.Author{}, nil
+	}
+
+	return a.AuthorRepo.Update(authors)
+
+}

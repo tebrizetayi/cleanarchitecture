@@ -75,8 +75,6 @@ func (a *AuthorInmemoryRepo) Update(authors []model.Author) ([]model.Author, err
 		} else {
 			result = append(result, model.Author{ID: author.ID})
 		}
-
 	}
-
 	return result, nil
 }

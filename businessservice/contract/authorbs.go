@@ -7,4 +7,5 @@ type AuthorBS interface {
 	Delete(ids []int) error
 	Create(authors []model.Author) ([]model.Author, error)
 	GetByIds(ids []int) ([]model.Author, error)
+	Update(authors []model.Author) ([]model.Author, error)
 }

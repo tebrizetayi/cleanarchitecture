@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -72,7 +73,7 @@ func (ac *AuthorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		errorResponse(w, err, http.StatusBadRequest)
 		return
 	}
-	resultResponse(w, "", http.StatusOK)
+	resultResponse(w, "", http.StatusNoContent)
 }
 
 func (ac *AuthorHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -92,18 +93,68 @@ func (ac *AuthorHandler) Create(w http.ResponseWriter, r *http.Request) {
 	resultResponse(w, aResp, http.StatusOK)
 }
 
+func (ac *AuthorHandler) Update(w http.ResponseWriter, r *http.Request) {
+
+	idInput, ok := mux.Vars(r)["id"]
+	if ok {
+		id, err := strconv.Atoi(idInput)
+		if err != nil {
+			errorResponse(w, err, http.StatusBadRequest)
+			return
+		}
+
+		var aReq AuthorRequest = AuthorRequest{}
+		err = json.NewDecoder(r.Body).Decode(&aReq)
+		if err != nil {
+			errorResponse(w, err, http.StatusBadRequest)
+			return
+		}
+		aReq.Authors[0].ID = id
+
+		aResp := AuthorResponse{}
+
+		//Checking if id exists in the database
+		authors, err := ac.authorBS.GetByIds([]int{id})
+		if err != nil {
+			errorResponse(w, err, http.StatusBadRequest)
+			return
+		}
+
+		//If id is in the database then update
+		if len(authors) == 1 {
+			//If id is in the database then update
+			aResp.Authors, err = ac.authorBS.Update(aReq.Authors)
+			if err != nil {
+				errorResponse(w, err, http.StatusBadRequest)
+				return
+			}
+		} else {
+			//if id is not in the database then add
+
+			aResp.Authors, err = ac.authorBS.Create(aReq.Authors)
+			if err != nil {
+				errorResponse(w, err, http.StatusBadRequest)
+				return
+			}
+		}
+		resultResponse(w, aResp, http.StatusOK)
+	} else {
+		errorResponse(w, errors.New("No Data"), http.StatusBadRequest)
+	}
+
+}
+
 func errorResponse(w http.ResponseWriter, err error, statuscode int) {
 	w.WriteHeader(statuscode)
 	fmt.Fprint(w, err)
 }
 
 func resultResponse(w http.ResponseWriter, data interface{}, status int) {
-
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
 		errorResponse(w, err, http.StatusBadRequest)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	w.Header().Set("Content-Type", "application/json")
 }
