@@ -36,7 +36,7 @@ func TestArticleRepository(t *testing.T) {
 					ids = append(ids, v.ID)
 				}
 
-				Convey("Then it can get by id", func() {
+				Convey("And it can get by id", func() {
 					found, err := articlerepo.GetByIds(ids)
 					So(err, ShouldBeNil)
 					for i, _ := range found {
@@ -49,6 +49,8 @@ func TestArticleRepository(t *testing.T) {
 					found, _ := articlerepo.GetByIds(ids)
 					So(found, ShouldBeEmpty)
 				})
+
+				Convey("")
 			})
 		})
 	})

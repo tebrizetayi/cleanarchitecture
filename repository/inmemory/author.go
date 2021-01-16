@@ -25,20 +25,6 @@ func (a *AuthorInmemoryRepo) Create(Authors []model.Author) ([]model.Author, err
 	return result, nil
 }
 
-func (a *AuthorInmemoryRepo) Update(authors []model.Author) ([]model.Author, error) {
-
-	result := []model.Author{}
-	for _, v := range authors {
-		if _, ok := a.Authors[v.ID]; ok {
-			a.Authors[v.ID] = v
-			result = append(result, v)
-		} else {
-			result = append(result, model.Author{})
-		}
-	}
-	return result, nil
-}
-
 func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
 
 	result := []model.Author{}
@@ -74,4 +60,23 @@ func (a *AuthorInmemoryRepo) GetByIds(ids []int) ([]model.Author, error) {
 func (a *AuthorInmemoryRepo) Reset() {
 	a.Authors = make(map[int]model.Author)
 	a.sequence = 0
+}
+
+func (a *AuthorInmemoryRepo) Update(authors []model.Author) ([]model.Author, error) {
+	if authors == nil || len(authors) == 0 {
+		return []model.Author{}, nil
+	}
+
+	result := []model.Author{}
+	for _, author := range authors {
+		if _, ok := a.Authors[author.ID]; ok {
+			a.Authors[author.ID] = author
+			result = append(result, a.Authors[author.ID])
+		} else {
+			result = append(result, model.Author{ID: author.ID})
+		}
+
+	}
+
+	return result, nil
 }
