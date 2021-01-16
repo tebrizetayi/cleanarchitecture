@@ -8,67 +8,32 @@ import (
 )
 
 func TestArticleRepository(t *testing.T) {
-	articlerepo := NewArticleInmemoryRepo()
-	authorrepo := NewAuthorInmemoryRepo()
+	Convey("Creating multiple  articles", t, func() {
+		articlerepo := NewArticleInmemoryRepo()
+		authorrepo := NewAuthorInmemoryRepo()
 
-	author := model.Author{
-		Name: "Jack London",
-	}
-	createdAuthor, _ := authorrepo.Create([]model.Author{author})
-
-	Convey("Creating a article", t, func() {
-		Convey("When you create a new article", func() {
-
-			article := model.Article{
+		author := model.Author{
+			Name: "Jack London",
+		}
+		createdAuthor, _ := authorrepo.Create([]model.Author{author})
+		articles := []model.Article{
+			{
 				Name:   "EFT from A to Z",
 				Author: createdAuthor,
-			}
-			createdArticles, _ := articlerepo.Create([]model.Article{article})
-			Convey("Then ID should be bigger than zero", func() {
-				created := createdArticles[0]
-				So(created.ID, ShouldNotBeZeroValue)
-
-				Convey("Then it can get by id", func() {
-					found, _ := articlerepo.GetByIds([]int{created.ID})
-					for i, v := range found {
-						So(v.ID, ShouldEqual, createdArticles[i].ID)
-					}
-				})
-
-				Convey("Then it can be deleted", func() {
-					articlerepo.Delete([]int{created.ID})
-					found, err := articlerepo.GetByIds([]int{created.ID})
-					So(err, ShouldBeEmpty)
-					So(found, ShouldBeEmpty)
-
-				})
-			})
-
-		})
-		Reset(func() {
-			articlerepo.Reset()
-		})
-	})
-
-	Convey("Creating multiple  articles", t, func() {
+			},
+			{
+				Name:   "Spanish with Lena",
+				Author: createdAuthor,
+			},
+		}
 		Convey("When you create new articles", func() {
-			articles := []model.Article{
-				{
-					Name:   "EFT from A to Z",
-					Author: createdAuthor,
-				},
-				{
-					Name:   "Spanish with Lena",
-					Author: createdAuthor,
-				},
-			}
-			created, _ := articlerepo.Create(articles)
+			created, err := articlerepo.Create(articles)
+			So(err, ShouldBeNil)
 			Convey("Then ID should be bigger than zero", func() {
-
 				ids := []int{}
 				for _, v := range created {
-					ids = append(ids, v.ID)
 					So(v.ID, ShouldNotBeZeroValue)
+					ids = append(ids, v.ID)
 				}
 
 				Convey("Then it can get by id", func() {
@@ -85,10 +50,6 @@ func TestArticleRepository(t *testing.T) {
 					So(found, ShouldBeEmpty)
 				})
 			})
-
-		})
-		Reset(func() {
-			articlerepo.Reset()
 		})
 	})
 }

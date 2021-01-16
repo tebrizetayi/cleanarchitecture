@@ -8,23 +8,20 @@ import (
 	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
 )
 
-var (
-	articleRepo = inmemory.NewArticleInmemoryRepo()
-	articleBS   = NewArticleBS(&articleRepo)
-)
-
 func TestArticle(t *testing.T) {
 	Convey("Testing getting article", t, func() {
+		articleRepo := inmemory.NewArticleInmemoryRepo()
+		articleBS := NewArticleBS(&articleRepo)
+		articles := []model.Article{
+			{
+				Name:   "Beginning to programming",
+				Author: nil,
+			},
+			{
+				Name:   "Beginning to spanish",
+				Author: nil,
+			}}
 		Convey("WHEN an article is created in the system", func() {
-			articles := []model.Article{
-				{
-					Name:   "Beginning to programming",
-					Author: nil,
-				},
-				{
-					Name:   "Beginning to spanish",
-					Author: nil,
-				}}
 			created, _ := articleBS.Create(articles)
 			ids := []int{}
 			for i := 0; i < len(created); i++ {

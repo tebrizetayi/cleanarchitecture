@@ -8,22 +8,21 @@ import (
 	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
 )
 
-var (
-	authorRepo = inmemory.NewAuthorInmemoryRepo()
-	authorBS   = NewAuthorBS(&authorRepo)
-)
-
 func TestAuthor(t *testing.T) {
 	Convey("Testing getting Author", t, func() {
+		authorRepo := inmemory.NewAuthorInmemoryRepo()
+		authorBS := NewAuthorBS(&authorRepo)
+		authors := []model.Author{
+			{
+				Name: "John Doe",
+			},
+			{
+				Name: "Jack London",
+			}}
 		Convey("WHEN an Author is created in the system", func() {
-			authors := []model.Author{
-				{
-					Name: "John Doe",
-				},
-				{
-					Name: "Jack London",
-				}}
-			created, _ := authorBS.Create(authors)
+			created, err := authorBS.Create(authors)
+			So(err, ShouldBeNil)
+
 			ids := []int{}
 			for i := 0; i < len(created); i++ {
 				ids = append(ids, created[i].ID)
