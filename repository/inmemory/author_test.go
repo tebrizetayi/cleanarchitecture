@@ -29,7 +29,6 @@ func TestAuthorRepository(t *testing.T) {
 
 		//First author is taken for testing
 		author := created[0]
-
 		Convey("When you update author where the id in the database", func() {
 			author.Name = author.Name + " " + author.Name
 			_, err := authorrepo.Update([]model.Author{author})
@@ -68,6 +67,5 @@ func TestAuthorRepository(t *testing.T) {
 				So(newAuthors, ShouldResemble, authors)
 			})
 		})
-
 	})
 }

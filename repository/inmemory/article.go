@@ -71,6 +71,25 @@ func (a *ArticleInmemoryRepo) GetByIds(ids []int) ([]model.Article, error) {
 	return result, nil
 }
 
+func (a *ArticleInmemoryRepo) Update(articles []model.Article) ([]model.Article, error) {
+	if articles == nil || len(articles) == 0 {
+		return []model.Article{}, nil
+	}
+
+	result := []model.Article{}
+	for _, article := range articles {
+		if _, ok := a.Articles[article.ID]; ok {
+			a.Articles[article.ID] = article
+			result = append(result, a.Articles[article.ID])
+		} else {
+			result = append(result, model.Article{ID: article.ID})
+		}
+
+	}
+
+	return result, nil
+}
+
 func (a *ArticleInmemoryRepo) Reset() {
 	a.Articles = make(map[int]model.Article)
 	a.sequence = 0

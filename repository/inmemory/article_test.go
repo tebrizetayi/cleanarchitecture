@@ -8,49 +8,65 @@ import (
 )
 
 func TestArticleRepository(t *testing.T) {
-	Convey("Creating multiple  articles", t, func() {
+	Convey("Setup", t, func() {
 		articlerepo := NewArticleInmemoryRepo()
-		authorrepo := NewAuthorInmemoryRepo()
+		Articles := []model.Article{
+			{
+				Name:   "Spanish",
+				Author: []model.Author{{Name: "John Doe"}},
+			},
+			{
+				Name:   "Jack London",
+				Author: []model.Author{{Name: "William"}},
+			},
+		}
+		created, err := articlerepo.Create(Articles)
+		So(err, ShouldBeNil)
 
-		author := model.Author{
-			Name: "Jack London",
+		ids := []int{}
+		for _, v := range created {
+			So(v.ID, ShouldNotBeZeroValue)
+			ids = append(ids, v.ID)
 		}
-		createdAuthor, _ := authorrepo.Create([]model.Author{author})
-		articles := []model.Article{
-			{
-				Name:   "EFT from A to Z",
-				Author: createdAuthor,
-			},
-			{
-				Name:   "Spanish with Lena",
-				Author: createdAuthor,
-			},
-		}
-		Convey("When you create new articles", func() {
-			created, err := articlerepo.Create(articles)
+
+		//First article is taken for testing
+		article := created[0]
+		Convey("When you update article where the id in the database", func() {
+			article.Name = article.Name + " " + article.Name
+			_, err := articlerepo.Update([]model.Article{article})
 			So(err, ShouldBeNil)
-			Convey("Then ID should be bigger than zero", func() {
-				ids := []int{}
-				for _, v := range created {
-					So(v.ID, ShouldNotBeZeroValue)
-					ids = append(ids, v.ID)
-				}
+			Convey("Then updated article can be get by id", func() {
+				updateArticles, err := articlerepo.GetByIds([]int{article.ID})
+				So(err, ShouldBeNil)
+				So(len(updateArticles), ShouldEqual, 1)
+				So(updateArticles[0], ShouldResemble, article)
+			})
 
-				Convey("And it can get by id", func() {
-					found, err := articlerepo.GetByIds(ids)
-					So(err, ShouldBeNil)
-					for i, _ := range found {
-						So(found[i].ID, ShouldEqual, created[i].ID)
-					}
-				})
+		})
 
-				Convey("Then it can be deleted", func() {
-					articlerepo.Delete(ids)
-					found, _ := articlerepo.GetByIds(ids)
-					So(found, ShouldBeEmpty)
-				})
+		Convey("When you delete article where the id is in the database", func() {
+			err := articlerepo.Delete([]int{article.ID})
+			So(err, ShouldBeNil)
+			Convey("Then the deleted id should not be in the database", func() {
+				deletedArticles, err := articlerepo.GetByIds([]int{article.ID})
+				So(err, ShouldBeNil)
+				So(len(deletedArticles), ShouldEqual, 0)
+			})
+		})
 
-				Convey("")
+		Convey("When you add article", func() {
+			newArticle := model.Article{
+				Name: "New Article",
+			}
+			newArticles, err := articlerepo.Create([]model.Article{newArticle})
+			So(err, ShouldBeNil)
+			So(len(newArticles), ShouldEqual, 1)
+			So(newArticles[0].ID, ShouldBeGreaterThan, 0)
+			Convey("Then the added id should be in the database", func() {
+				articles, err := articlerepo.GetByIds([]int{newArticles[0].ID})
+				So(err, ShouldBeNil)
+				So(len(articles), ShouldEqual, 1)
+				So(newArticles, ShouldResemble, articles)
 			})
 		})
 	})

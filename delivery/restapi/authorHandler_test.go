@@ -35,25 +35,8 @@ func TestAuthor(t *testing.T) {
 					err = json.Unmarshal(data, &aResp)
 					So(err, ShouldBeNil)
 					So(len(aResp.Authors), ShouldBeGreaterThan, 0)
-					oldAuthor := aResp.Authors[0]
-					Convey("When updating an existing author", func() {
-
-						updateReq := []byte(fmt.Sprintf(`{"authors":[{"name":"Lev Tolstoy",id:"%d"}]}`, author.ID))
-						req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/author/%d", author.ID), bytes.NewBuffer(updateReq))
-						So(err, ShouldBeNil)
-						handler.ServeHTTP(rr, req)
-						Convey("Then it the result should be empty", func() {
-							So(rr.Code, ShouldEqual, http.StatusOK)
-							var aResp AuthorResponse
-							data, err := ioutil.ReadAll(rr.Body)
-							err = json.Unmarshal(data, &aResp)
-							So(err, ShouldBeNil)
-							So(aResp.Authors[0], ShouldNotResemble, oldAuthor)
-						})
-
-					})
-
 					Convey("When deleting existing author", func() {
+						author := aResp.Authors[0]
 						req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/author/%d", author.ID), nil)
 						So(err, ShouldBeNil)
 						handler.ServeHTTP(rr, req)
