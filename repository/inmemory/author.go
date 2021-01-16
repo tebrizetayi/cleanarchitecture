@@ -1,8 +1,6 @@
 package inmemory
 
 import (
-	"errors"
-
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
 )
 
@@ -12,13 +10,10 @@ type AuthorInmemoryRepo struct {
 }
 
 func NewAuthorInmemoryRepo() AuthorInmemoryRepo {
-	return AuthorInmemoryRepo{sequence: 0}
+	return AuthorInmemoryRepo{sequence: 0, Authors: make(map[int]model.Author)}
 }
 
 func (a *AuthorInmemoryRepo) Create(Authors []model.Author) ([]model.Author, error) {
-	if a.Authors == nil {
-		a.Authors = make(map[int]model.Author)
-	}
 
 	result := []model.Author{}
 	for _, v := range Authors {
@@ -30,10 +25,21 @@ func (a *AuthorInmemoryRepo) Create(Authors []model.Author) ([]model.Author, err
 	return result, nil
 }
 
-func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
-	if a.Authors == nil {
-		return nil, errors.New("No data")
+func (a *AuthorInmemoryRepo) Update(authors []model.Author) ([]model.Author, error) {
+
+	result := []model.Author{}
+	for _, v := range authors {
+		if _, ok := a.Authors[v.ID]; ok {
+			a.Authors[v.ID] = v
+			result = append(result, v)
+		} else {
+			result = append(result, model.Author{})
+		}
 	}
+	return result, nil
+}
+
+func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
 
 	result := []model.Author{}
 	for _, v := range a.Authors {
@@ -43,9 +49,6 @@ func (a *AuthorInmemoryRepo) GetAll() ([]model.Author, error) {
 }
 
 func (a *AuthorInmemoryRepo) Delete(ids []int) error {
-	if a.Authors == nil {
-		return errors.New("No data")
-	}
 
 	for _, v := range ids {
 		if _, ok := a.Authors[v]; ok {
@@ -57,9 +60,6 @@ func (a *AuthorInmemoryRepo) Delete(ids []int) error {
 }
 
 func (a *AuthorInmemoryRepo) GetByIds(ids []int) ([]model.Author, error) {
-	if a.Authors == nil {
-		return nil, errors.New("No data")
-	}
 
 	result := []model.Author{}
 	for _, v := range ids {

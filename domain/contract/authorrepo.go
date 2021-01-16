@@ -10,4 +10,5 @@ type AuthorRepository interface {
 	Reset()
 	GetByIds(ids []int) ([]model.Author, error)
 	Create(authors []model.Author) ([]model.Author, error)
+	Update(authors []model.Author) ([]model.Author, error)
 }
