@@ -31,7 +31,7 @@ func NewAuthorHandler(aBS contract.AuthorBS) AuthorHandler {
 
 func (ac *AuthorHandler) Get(w http.ResponseWriter, r *http.Request) {
 	idInput, ok := mux.Vars(r)["id"]
-	var authors []model.Author
+	aResp := AuthorResponse{}
 	var err error
 	if ok {
 		id, err := strconv.Atoi(idInput)
@@ -39,19 +39,19 @@ func (ac *AuthorHandler) Get(w http.ResponseWriter, r *http.Request) {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
-		authors, err = ac.authorBS.GetByIds([]int{id})
+		aResp.Authors, err = ac.authorBS.GetByIds([]int{id})
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
 	} else {
-		authors, err = ac.authorBS.GetAll()
+		aResp.Authors, err = ac.authorBS.GetAll()
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
 	}
-	resultResponse(w, authors, http.StatusOK)
+	resultResponse(w, aResp, http.StatusOK)
 }
 
 func (ac *AuthorHandler) Delete(w http.ResponseWriter, r *http.Request) {
