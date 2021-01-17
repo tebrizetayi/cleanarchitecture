@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -145,16 +144,16 @@ func (ac *AuthorHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func errorResponse(w http.ResponseWriter, err error, statuscode int) {
-	w.WriteHeader(statuscode)
-	fmt.Fprint(w, err)
+	http.Error(w, err.Error(), statuscode)
 }
 
-func resultResponse(w http.ResponseWriter, data interface{}, status int) {
-	err := json.NewEncoder(w).Encode(data)
+func resultResponse(w http.ResponseWriter, responseData interface{}, status int) {
+	data, err := json.Marshal(responseData)
 	if err != nil {
 		errorResponse(w, err, http.StatusBadRequest)
 		return
 	}
+
 	w.WriteHeader(status)
-	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 }
