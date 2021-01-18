@@ -3,6 +3,7 @@ package businessservice
 import (
 	"testing"
 
+	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
 	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
@@ -23,7 +24,7 @@ func TestAuthor(t *testing.T) {
 			created, err := authorBS.Create(authors)
 			So(err, ShouldBeNil)
 
-			ids := []int{}
+			ids := []uuid.UUID{}
 			for i := 0; i < len(created); i++ {
 				ids = append(ids, created[i].ID)
 			}

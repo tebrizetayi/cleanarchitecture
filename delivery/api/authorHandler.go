@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/tebrizetayi/cleanarchitecture/businessservice/contract"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
@@ -34,12 +34,12 @@ func (ac *AuthorHandler) Get(w http.ResponseWriter, r *http.Request) {
 	aResp := AuthorResponse{}
 	var err error
 	if ok {
-		id, err := strconv.Atoi(idInput)
+		id, err := uuid.Parse(idInput)
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
-		aResp.Authors, err = ac.authorBS.GetByIds([]int{id})
+		aResp.Authors, err = ac.authorBS.GetByIds([]uuid.UUID{id})
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
@@ -58,12 +58,12 @@ func (ac *AuthorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idInput, ok := mux.Vars(r)["id"]
 	var err error
 	if ok {
-		id, err := strconv.Atoi(idInput)
+		id, err := uuid.Parse(idInput)
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
-		err = ac.authorBS.Delete([]int{id})
+		err = ac.authorBS.Delete([]uuid.UUID{id})
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
@@ -96,7 +96,7 @@ func (ac *AuthorHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	idInput, ok := mux.Vars(r)["id"]
 	if ok {
-		id, err := strconv.Atoi(idInput)
+		id, err := uuid.Parse(idInput)
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
@@ -108,12 +108,12 @@ func (ac *AuthorHandler) Update(w http.ResponseWriter, r *http.Request) {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
-		aReq.Authors[0].ID = id
+		//aReq.Authors[0].ID = id
 
 		aResp := AuthorResponse{}
 
 		//Checking if id exists in the database
-		authors, err := ac.authorBS.GetByIds([]int{id})
+		authors, err := ac.authorBS.GetByIds([]uuid.UUID{id})
 		if err != nil {
 			errorResponse(w, err, http.StatusBadRequest)
 			return

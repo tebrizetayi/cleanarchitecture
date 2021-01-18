@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebrizetayi/cleanarchitecture/businessservice"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
@@ -37,8 +37,8 @@ func TestAuthorHandler(t *testing.T) {
 		author := createdAuthors[0]
 		Convey("When you update author where the id in the database", func() {
 			author.Name = author.Name + " " + author.Name
-			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":%d}]}`, author.Name, author.ID)
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%d", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":"%s"}]}`, author.Name, author.ID)
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -53,10 +53,10 @@ func TestAuthorHandler(t *testing.T) {
 		Convey("When you update author where the id is not in the database", func() {
 			author := model.Author{
 				Name: "John Doe",
-				ID:   math.MaxInt32,
+				ID:   uuid.New(),
 			}
-			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":%d}]}`, author.Name, author.ID)
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%d", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":"%s"}]}`, author.Name, author.ID)
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -66,7 +66,7 @@ func TestAuthorHandler(t *testing.T) {
 				err := json.NewDecoder(rr.Body).Decode(&aRes)
 				So(err, ShouldBeNil)
 				So(author.Name, ShouldEqual, aRes.Authors[0].Name)
-				//Because id is autoincremented property
+				//Because id is autogenereted property
 				So(author.ID, ShouldNotEqual, aRes.Authors[0].ID)
 			})
 		})
@@ -74,7 +74,7 @@ func TestAuthorHandler(t *testing.T) {
 		Convey("When you update author with wrong json", func() {
 
 			authorJSON := `{"authors":[{"name"}]}`
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%d", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -84,7 +84,7 @@ func TestAuthorHandler(t *testing.T) {
 			})
 		})
 		Convey("When you delete author where the id is the database", func() {
-			req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/api/author/%d", author.ID), nil)
+			req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/api/author/%s", author.ID), nil)
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -106,10 +106,10 @@ func TestAuthorHandler(t *testing.T) {
 				So(err, ShouldBeNil)
 				So(len(aResp.Authors), ShouldEqual, 1)
 				author := aResp.Authors[0]
-				So(author.ID, ShouldBeGreaterThan, 0)
+				So(author.ID, ShouldNotBeNil)
 
 				Convey("And the a new created author should be get", func() {
-					req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/author/%d", author.ID), nil)
+					req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/author/%s", author.ID), nil)
 					rr := httptest.NewRecorder()
 					handler.ServeHTTP(rr, req)
 					So(rr.Code, ShouldEqual, http.StatusOK)

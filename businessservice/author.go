@@ -1,6 +1,7 @@
 package businessservice
 
 import (
+	"github.com/google/uuid"
 	"github.com/tebrizetayi/cleanarchitecture/domain/contract"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
 )
@@ -23,7 +24,7 @@ func (a *AuthorBS) GetAll() ([]model.Author, error) {
 	return authors, nil
 }
 
-func (a *AuthorBS) Delete(ids []int) error {
+func (a *AuthorBS) Delete(ids []uuid.UUID) error {
 	err := a.AuthorRepo.Delete(ids)
 	return err
 }
@@ -36,7 +37,7 @@ func (a *AuthorBS) Create(authors []model.Author) ([]model.Author, error) {
 	return authors, nil
 }
 
-func (a *AuthorBS) GetByIds(ids []int) ([]model.Author, error) {
+func (a *AuthorBS) GetByIds(ids []uuid.UUID) ([]model.Author, error) {
 	authors, err := a.AuthorRepo.GetByIds(ids)
 	if err != nil {
 		return nil, err
