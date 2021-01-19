@@ -108,7 +108,7 @@ func (ac *AuthorHandler) Update(w http.ResponseWriter, r *http.Request) {
 			errorResponse(w, err, http.StatusBadRequest)
 			return
 		}
-		//aReq.Authors[0].ID = id
+		//WHERE 1aReq.Authors[0].ID = id
 
 		aResp := AuthorResponse{}
 

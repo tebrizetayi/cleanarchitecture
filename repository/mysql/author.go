@@ -47,7 +47,7 @@ func (a *AuthorMysqlRepo) Create(Authors []model.Author) ([]model.Author, error)
 
 func (a *AuthorMysqlRepo) GetAll() ([]model.Author, error) {
 
-	query := "Select Id,Name From Author where true=true Limit 10"
+	query := "Select `Id`,`Name` From `Author` where true=true Limit 10"
 	dbrow, err := a.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (a *AuthorMysqlRepo) GetAll() ([]model.Author, error) {
 func (a *AuthorMysqlRepo) Delete(ids []uuid.UUID) error {
 	query := "Delete from  Author where true=true"
 	for _, v := range ids {
-		query += fmt.Sprintf(" AND id=`%s`", v)
+		query += fmt.Sprintf(" AND `id`='%s'", v)
 	}
 
 	_, err := a.DB.Exec(query)
@@ -111,21 +111,24 @@ func (a *AuthorMysqlRepo) Update(authors []model.Author) ([]model.Author, error)
 		return []model.Author{}, nil
 	}
 
-	updatePhrase := "UPDATE Author SET Name=`%s` WHERE Id=`%s`;"
+	updatePhrase := "UPDATE Author SET `Name`='%s' WHERE `Id`='%s';"
 	query := ""
-	result := []model.Author{}
 	for _, author := range authors {
-		query += fmt.Sprintf(updatePhrase, author.ID, author.Name)
+		query += fmt.Sprintf(updatePhrase, author.Name, author.ID)
 	}
 	tx, err := a.DB.BeginTx(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
-	tx.Exec(query)
+	_, err = tx.Exec(query)
+	if err != nil {
+		return nil, err
+	}
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
+
 		return nil, err
 	}
-	return result, nil
+	return authors, nil
 }

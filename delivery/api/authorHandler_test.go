@@ -12,12 +12,14 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebrizetayi/cleanarchitecture/businessservice"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
-	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
+	"github.com/tebrizetayi/cleanarchitecture/repository/mysql"
 )
 
 func TestAuthorHandler(t *testing.T) {
 	Convey("Setup", t, func() {
-		authorRepo := inmemory.NewAuthorInmemoryRepo()
+		//authorRepo := inmemory.NewAuthorInmemoryRepo()
+		authorRepo, err := mysql.NewAuthorMysqlRepo("root:secret@tcp(127.0.0.1:3306)/Academia")
+		So(err, ShouldBeNil)
 		authors := []model.Author{
 			{
 				Name: "John Doe",
@@ -47,6 +49,7 @@ func TestAuthorHandler(t *testing.T) {
 				var aRes AuthorResponse
 				err := json.NewDecoder(rr.Body).Decode(&aRes)
 				So(err, ShouldBeNil)
+				So(len(aRes.Authors), ShouldBeGreaterThan, 0)
 				So(author, ShouldResemble, aRes.Authors[0])
 			})
 		})

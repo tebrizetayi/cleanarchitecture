@@ -31,8 +31,9 @@ func TestAuthorRepository(t *testing.T) {
 		}
 
 		//First author is taken for testing
-		author := created[0]
+
 		Convey("When you update author where the id in the database", func() {
+			author := created[0]
 			author.Name = author.Name + " " + author.Name
 			_, err := authorrepo.Update([]model.Author{author})
 			So(err, ShouldBeNil)
@@ -46,6 +47,7 @@ func TestAuthorRepository(t *testing.T) {
 		})
 
 		Convey("When you delete author where the id is in the database", func() {
+			author := created[0]
 			err := authorrepo.Delete([]uuid.UUID{author.ID})
 			So(err, ShouldBeNil)
 			Convey("Then the deleted id should not be in the database", func() {

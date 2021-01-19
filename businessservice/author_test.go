@@ -6,12 +6,15 @@ import (
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
-	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
+	"github.com/tebrizetayi/cleanarchitecture/repository/mysql"
 )
 
 func TestAuthor(t *testing.T) {
 	Convey("Testing getting Author", t, func() {
-		authorRepo := inmemory.NewAuthorInmemoryRepo()
+		authorRepo, err := mysql.NewAuthorMysqlRepo("root:secret@tcp(127.0.0.1:3306)/Academia")
+		So(err, ShouldBeNil)
+
+		//authorRepo := inmemory.NewAuthorInmemoryRepo()
 		authorBS := NewAuthorBS(&authorRepo)
 		authors := []model.Author{
 			{
