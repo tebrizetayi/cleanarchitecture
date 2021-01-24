@@ -34,11 +34,25 @@ func (a *AuthorMysqlRepo) Create(Authors []model.Author) ([]model.Author, error)
 		result = append(result, v)
 	}
 
-	dbrow, err := a.DB.Query(query)
-	if err != nil {
+	var tx *sql.Tx
+	var err error
+
+	if tx, err = a.DB.BeginTx(context.Background(), nil); err != nil {
 		return nil, err
 	}
-	defer dbrow.Close()
+
+	var dbRow *sql.Rows
+	if dbRow, err = tx.Query(query); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	defer dbRow.Close()
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	return result, nil
 }
 
@@ -64,14 +78,27 @@ func (a *AuthorMysqlRepo) GetAll() ([]model.Author, error) {
 }
 
 func (a *AuthorMysqlRepo) Delete(ids []uuid.UUID) error {
-	query := "Delete from  Author where true=true"
+	query := "Delete from Author where true=true"
 	for _, v := range ids {
 		query += fmt.Sprintf(" AND `id`='%s'", v)
 	}
 
-	_, err := a.DB.Exec(query)
+	var tx *sql.Tx
+	var err error
+	if tx, err = a.DB.BeginTx(context.Background(), nil); err != nil {
+		return err
+	}
 
-	return err
+	if _, err = tx.Exec(query); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return nil
 }
 
 func (a *AuthorMysqlRepo) GetByIds(ids []uuid.UUID) ([]model.Author, error) {
@@ -113,19 +140,23 @@ func (a *AuthorMysqlRepo) Update(authors []model.Author) ([]model.Author, error)
 	for _, author := range authors {
 		query += fmt.Sprintf(updatePhrase, author.Name, author.ID)
 	}
-	tx, err := a.DB.BeginTx(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-	_, err = tx.Exec(query)
-	if err != nil {
-		return nil, err
-	}
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
 
+	var tx *sql.Tx
+	var err error
+
+	if tx, err = a.DB.BeginTx(context.Background(), nil); err != nil {
 		return nil, err
 	}
+
+	if _, err = tx.Exec(query); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	return authors, nil
 }
