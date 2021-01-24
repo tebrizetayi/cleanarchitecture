@@ -15,12 +15,9 @@ type AuthorMysqlRepo struct {
 }
 
 //root:pass1@tcp(127.0.0.1:3306)/tuts
-func NewAuthorMysqlRepo(conn string) (AuthorMysqlRepo, error) {
-	db, err := sql.Open("mysql", conn)
-	if err != nil {
-		return AuthorMysqlRepo{}, err
-	}
-	return AuthorMysqlRepo{DB: db}, nil
+func NewAuthorMysqlRepo(db *sql.DB) AuthorMysqlRepo {
+
+	return AuthorMysqlRepo{DB: db}
 }
 
 func (a *AuthorMysqlRepo) Create(Authors []model.Author) ([]model.Author, error) {

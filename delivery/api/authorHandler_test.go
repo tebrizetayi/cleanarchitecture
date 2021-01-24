@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,9 +18,9 @@ import (
 
 func TestAuthorHandler(t *testing.T) {
 	Convey("Setup", t, func() {
-		//authorRepo := inmemory.NewAuthorInmemoryRepo()
-		authorRepo, err := mysql.NewAuthorMysqlRepo("root:secret@tcp(127.0.0.1:3306)/Academia")
+		db, err := sql.Open("mysql", "root:secret@tcp(127.0.0.1:3306)/Academia")
 		So(err, ShouldBeNil)
+		authorRepo := mysql.NewAuthorMysqlRepo(db)
 		authors := []model.Author{
 			{
 				Name: "John Doe",

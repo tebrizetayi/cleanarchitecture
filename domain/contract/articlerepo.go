@@ -10,4 +10,5 @@ type ArticleRepository interface {
 	Reset()
 	GetByIds(ids []int) ([]model.Article, error)
 	Create(articles []model.Article) ([]model.Article, error)
+	Update(articles []model.Article) ([]model.Article, error)
 }

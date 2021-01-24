@@ -1,21 +1,35 @@
 package businessservice
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/tebrizetayi/cleanarchitecture/domain/contract"
 	"github.com/tebrizetayi/cleanarchitecture/domain/model"
+	"github.com/tebrizetayi/cleanarchitecture/repository/inmemory"
 	"github.com/tebrizetayi/cleanarchitecture/repository/mysql"
 )
 
-func TestAuthor(t *testing.T) {
-	Convey("Testing getting Author", t, func() {
-		authorRepo, err := mysql.NewAuthorMysqlRepo("root:secret@tcp(127.0.0.1:3306)/Academia")
-		So(err, ShouldBeNil)
+func TestAuthorMysqlRepo(t *testing.T) {
+	db, err := sql.Open("mysql", "root:secret@tcp(127.0.0.1:3306)/Academia")
+	if err != nil {
+		t.Error(err)
+	}
+	authorRepo := mysql.NewAuthorMysqlRepo(db)
+	AuthorRepositoryTestStructure(t, &authorRepo)
+}
 
-		//authorRepo := inmemory.NewAuthorInmemoryRepo()
-		authorBS := NewAuthorBS(&authorRepo)
+func TestAuthorInmemoryRepo(t *testing.T) {
+	authorRepo := inmemory.NewAuthorInmemoryRepo()
+	AuthorRepositoryTestStructure(t, &authorRepo)
+
+}
+
+func AuthorRepositoryTestStructure(t *testing.T, authorRepo contract.AuthorRepository) {
+	Convey("Testing getting Author", t, func() {
+		authorBS := NewAuthorBS(authorRepo)
 		authors := []model.Author{
 			{
 				Name: "John Doe",
