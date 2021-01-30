@@ -41,7 +41,7 @@ func TestAuthorHandler(t *testing.T) {
 		Convey("When you update author where the id in the database", func() {
 			author.Name = author.Name + " " + author.Name
 			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":"%s"}]}`, author.Name, author.ID)
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/v1/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -60,7 +60,7 @@ func TestAuthorHandler(t *testing.T) {
 				ID:   uuid.New(),
 			}
 			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s","id":"%s"}]}`, author.Name, author.ID)
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/v1/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -78,7 +78,7 @@ func TestAuthorHandler(t *testing.T) {
 		Convey("When you update author with wrong json", func() {
 
 			authorJSON := `{"authors":[{"name"}]}`
-			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
+			req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/api/v1/author/%s", author.ID), bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -88,7 +88,7 @@ func TestAuthorHandler(t *testing.T) {
 			})
 		})
 		Convey("When you delete author where the id is the database", func() {
-			req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/api/author/%s", author.ID), nil)
+			req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/api/v1/author/%s", author.ID), nil)
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -99,7 +99,7 @@ func TestAuthorHandler(t *testing.T) {
 
 		Convey("When you create a new author", func() {
 			authorJSON := fmt.Sprintf(`{"authors":[{"name":"%s"}]}`, author.Name)
-			req, err := http.NewRequest(http.MethodPost, "/api/author/", bytes.NewBuffer([]byte(authorJSON)))
+			req, err := http.NewRequest(http.MethodPost, "/api/v1/author/", bytes.NewBuffer([]byte(authorJSON)))
 			So(err, ShouldBeNil)
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
@@ -113,7 +113,7 @@ func TestAuthorHandler(t *testing.T) {
 				So(author.ID, ShouldNotBeNil)
 
 				Convey("And the a new created author should be get", func() {
-					req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/author/%s", author.ID), nil)
+					req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/author/%s", author.ID), nil)
 					rr := httptest.NewRecorder()
 					handler.ServeHTTP(rr, req)
 					So(rr.Code, ShouldEqual, http.StatusOK)

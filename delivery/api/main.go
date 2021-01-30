@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"database/sql"
@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/tebrizetayi/cleanarchitecture/businessservice"
-	"github.com/tebrizetayi/cleanarchitecture/delivery/api"
 	"github.com/tebrizetayi/cleanarchitecture/repository/mysql"
 )
 
@@ -18,8 +17,8 @@ func main() {
 	authorRepository := mysql.NewAuthorMysqlRepo(db)
 
 	authorService := businessservice.NewAuthorBS(&authorRepository)
-	authorhandler := api.NewAuthorHandler(&authorService)
-	r := api.InitRoutes(&authorhandler)
+	authorhandler := NewAuthorHandler(&authorService)
+	r := InitRoutes(&authorhandler)
 	log.Println("Server begin to run in 9090 port")
 	http.ListenAndServe(":9090", r)
 

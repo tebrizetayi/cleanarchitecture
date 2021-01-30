@@ -1,0 +1,26 @@
+syntax="proto3";
+
+package author;
+
+message AuthorId{
+    string Id=1;
+}
+
+message AuthorIds{
+    repeated AuthorId AuthorId=1; 
+}
+
+
+message Author{
+    string Id=1;
+    string Name=2;
+}
+
+message Authors{
+    repeated Author Author=1;
+}
+
+service AuthorGrpc{
+    rpc GetByIds(AuthorIds) returns (Authors) {}
+    rpc Create(Authors) returns (Authors){}
+}
