@@ -1,6 +1,6 @@
 syntax="proto3";
 
-package author;
+package proto;
 
 message AuthorId{
     string Id=1;

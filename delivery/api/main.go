@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/tebrizetayi/cleanarchitecture/businessservice"
+	. "github.com/tebrizetayi/cleanarchitecture/delivery/api/handler"
 	"github.com/tebrizetayi/cleanarchitecture/repository/mysql"
 )
 
@@ -21,5 +22,4 @@ func main() {
 	r := InitRoutes(&authorhandler)
 	log.Println("Server begin to run in 9090 port")
 	http.ListenAndServe(":9090", r)
-
 }
