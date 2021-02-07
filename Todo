@@ -1,3 +1,6 @@
-TODO:1.Reading Protobuf
-TODO:2.Adding Protobuf
-TODO:3.Correct packages for protobuf
+DONE:1.Reading Protobuf
+DONE:2.Adding Protobuf
+DONE:3.Correct packages for protobuf
+FIXME:Add context to operation
+
+TODO:Create SQLstatements as const in statement package.
